@@ -6,7 +6,7 @@ general:
     location: /my-log
     level: warn
 
-setup:
+cleanup:
   - gitlab: http://example.com/gitlab
     tokens:
       - my-token
