@@ -20,7 +20,7 @@ setup:
         - my-special-instance
 
     key-pairs:
-      remove-if-unused: true
+      remove-only-if-unused: true
       remove-if-older-than: 1d
       exclude:
         - my-special-key-pair
