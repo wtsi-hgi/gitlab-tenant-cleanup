@@ -19,6 +19,12 @@ cleanup:
       exclude:
         - my-special-instance
 
+    images:
+      remove-only-if-unused: true
+      remove-if-older-than: 31d
+      exclude:
+        - my-special-image
+
     key-pairs:
       remove-only-if-unused: true
       remove-if-older-than: 1d
