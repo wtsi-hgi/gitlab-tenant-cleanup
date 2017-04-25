@@ -1,0 +1,6 @@
+ hgicommon.testing.TestUsingType
+ hgicommon.testing.TestUsingObject
+ hgicommon.testing.create_tests
+ hgicommon.testing.create_tests_using_types
+ hgicommon.testing.create_tests_using_objects
+ hgicommon.testing.get_classes_to_test

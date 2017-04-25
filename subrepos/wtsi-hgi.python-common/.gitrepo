@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/wtsi-hgi/python-common.git
+	branch = develop
+	commit = 8c2b2033a1b567f0240fd77ed048ab9ae79c619c
+	parent = 7445a4a6df33aa9a55a6066d99138b4be53db57a
+	cmdver = 0.3.1
