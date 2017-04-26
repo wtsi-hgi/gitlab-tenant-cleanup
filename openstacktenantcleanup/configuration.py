@@ -4,7 +4,7 @@ from logging import getLevelName
 
 import yaml
 from boltons.timeutils import parse_timedelta
-from hgicommon.models import Model
+from openstacktenantcleanup.hgicommon.models import Model
 from typing import Pattern, List
 
 from openstacktenantcleanup.models import OpenstackCredentials
