@@ -7,7 +7,7 @@ from boltons.timeutils import parse_timedelta
 from hgicommon.models import Model
 from typing import Pattern, List
 
-from openstack_tenant_cleanup.models import OpenstackCredentials
+from openstacktenantcleanup.models import OpenstackCredentials
 
 _GENERAL_PROPERTY = "general"
 _GENERAL_RUN_EVERY_PROPERTY = "run-every"

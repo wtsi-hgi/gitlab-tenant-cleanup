@@ -4,9 +4,9 @@ import unittest
 from datetime import timedelta
 from logging import getLevelName
 
-from openstack_tenant_cleanup.configuration import parse_configuration, Configuration, GeneralConfiguration, \
+from openstacktenantcleanup.configuration import parse_configuration, Configuration, GeneralConfiguration, \
     LogConfiguration, CleanupConfiguration, CleanupAreaConfiguration
-from openstack_tenant_cleanup.models import OpenstackCredentials
+from openstacktenantcleanup.models import OpenstackCredentials
 
 _RESOURCE_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources")
 
