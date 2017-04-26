@@ -1,7 +1,7 @@
 from abc import ABCMeta
 from datetime import datetime
 
-from hgicommon.models import Model
+from openstacktenantcleanup.external.hgicommon.models import Model
 
 OpenstackIdentifier = str
 
@@ -30,7 +30,6 @@ class Timestamped(Model, metaclass=ABCMeta):
     def __init__(self, created_at: datetime=None, updated_at: datetime=None):
         self.created_at = created_at
         self.updated_at = updated_at
-
 
 
 class OpenstackItem(Model, metaclass=ABCMeta):

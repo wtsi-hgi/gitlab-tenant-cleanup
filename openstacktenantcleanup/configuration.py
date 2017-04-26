@@ -4,9 +4,9 @@ from logging import getLevelName
 
 import yaml
 from boltons.timeutils import parse_timedelta
-from openstacktenantcleanup.hgicommon.models import Model
 from typing import Pattern, List
 
+from openstacktenantcleanup.external.hgicommon.models import Model
 from openstacktenantcleanup.models import OpenstackCredentials
 
 _GENERAL_PROPERTY = "general"

@@ -26,7 +26,7 @@ from abc import ABCMeta
 from enum import Enum, unique
 from typing import Generic, TypeVar, Set
 
-from hgicommon.enums import ComparisonOperator
+from openstacktenantcleanup.external.hgicommon.enums import ComparisonOperator
 
 
 class Model(metaclass=ABCMeta):
