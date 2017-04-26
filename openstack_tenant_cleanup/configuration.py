@@ -28,10 +28,9 @@ _CLEANUP_EXCLUDE_PROPERTY = "exclude"
 _CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY = "remove-only-if-unused"
 
 
-
 class CleanupAreaConfiguration(Model):
     """
-    TODO
+    Configuration for how an area (e.g. images, key-pairs) is to be cleaned.
     """
     def __init__(self, remove_if_older_than: timedelta, excludes: List[Pattern], remove_only_if_unused: bool=True):
         self.remove_if_older_than = remove_if_older_than
@@ -41,7 +40,7 @@ class CleanupAreaConfiguration(Model):
 
 class CleanupConfiguration(Model):
     """
-    TODO
+    Model
     """
     def __init__(self, credentials: List[OpenstackCredentials]=None,
                  instance_cleanup_configuration: CleanupAreaConfiguration=None,
@@ -55,7 +54,7 @@ class CleanupConfiguration(Model):
 
 class LogConfiguration(Model):
     """
-    TODO
+    Configuration for logging.
     """
     def __init__(self, location: str=None, level: int=None):
         self.location = location
@@ -64,7 +63,7 @@ class LogConfiguration(Model):
 
 class GeneralConfiguration(Model):
     """
-    TODO
+    General configuration.
     """
     def __init__(self, run_period: timedelta=None, log: LogConfiguration=None):
         self.run_period = run_period
@@ -73,7 +72,7 @@ class GeneralConfiguration(Model):
 
 class Configuration(Model):
     """
-    TODO
+    Full configuration.
     """
     def __init__(self, general_configuration: GeneralConfiguration, cleanup_configurations: List[CleanupConfiguration]):
         self.general_configuration = general_configuration
@@ -82,18 +81,18 @@ class Configuration(Model):
 
 def _convert_to_timedelta(raw_timedelta: str) -> timedelta:
     """
-    TODO
-    :param raw_timedelta: 
-    :return: 
+    Converts a human readable time delta (e.g. "1h") to the equivalent Python `timedelta`.
+    :param raw_timedelta: the human readable timestamp
+    :return: the equivalent Python `timedelta`
     """
     return parse_timedelta(raw_timedelta)
 
 
 def parse_configuration(location: str):
     """
-    TODO
-    :param location: 
-    :return: 
+    Parses the configuration in the given location.
+    :param location: the location of the configuration that is to be parsed
+    :return: parsed configuration
     """
     with open(location, "r") as file:
         raw_configuration = yaml.load(file)
@@ -118,21 +117,24 @@ def parse_configuration(location: str):
                 password=raw_credential[_CLEANUP_CREDENTIALS_PASSWORD_PROPERTY],
             ))
 
-        raw_images = raw_cleanup[_CLEANUP_IMAGES_PROPERTY]
-        cleanup_configuration.image_cleanup_configuration = CleanupAreaConfiguration(
-            remove_if_older_than=_convert_to_timedelta(raw_images[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-            excludes=[re.compile(exclude) for exclude in raw_images[_CLEANUP_EXCLUDE_PROPERTY]])
+        if _CLEANUP_IMAGES_PROPERTY in raw_cleanup:
+            raw_images = raw_cleanup[_CLEANUP_IMAGES_PROPERTY]
+            cleanup_configuration.image_cleanup_configuration = CleanupAreaConfiguration(
+                remove_if_older_than=_convert_to_timedelta(raw_images[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
+                excludes=[re.compile(exclude) for exclude in raw_images[_CLEANUP_EXCLUDE_PROPERTY]])
+    
+        if _CLEANUP_INSTANCES_PROPERTY in raw_cleanup:
+            raw_instances = raw_cleanup[_CLEANUP_INSTANCES_PROPERTY]
+            cleanup_configuration.instance_cleanup_configuration = CleanupAreaConfiguration(
+                remove_if_older_than=_convert_to_timedelta(raw_instances[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
+                excludes=[re.compile(exclude) for exclude in raw_instances[_CLEANUP_EXCLUDE_PROPERTY]])
 
-        raw_instances = raw_cleanup[_CLEANUP_INSTANCES_PROPERTY]
-        cleanup_configuration.instance_cleanup_configuration = CleanupAreaConfiguration(
-            remove_if_older_than=_convert_to_timedelta(raw_instances[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-            excludes=[re.compile(exclude) for exclude in raw_instances[_CLEANUP_EXCLUDE_PROPERTY]])
-
-        raw_keypairs = raw_cleanup[_CLEANUP_KEY_PAIRS_PROPERTY]
-        cleanup_configuration.keypair_cleanup_configuration = CleanupAreaConfiguration(
-            remove_only_if_unused=raw_keypairs[_CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY],
-            remove_if_older_than=_convert_to_timedelta(raw_keypairs[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-            excludes=[re.compile(exclude) for exclude in raw_keypairs[_CLEANUP_EXCLUDE_PROPERTY]])
+        if _CLEANUP_KEY_PAIRS_PROPERTY in raw_cleanup:
+            raw_keypairs = raw_cleanup[_CLEANUP_KEY_PAIRS_PROPERTY]
+            cleanup_configuration.keypair_cleanup_configuration = CleanupAreaConfiguration(
+                remove_only_if_unused=raw_keypairs[_CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY],
+                remove_if_older_than=_convert_to_timedelta(raw_keypairs[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
+                excludes=[re.compile(exclude) for exclude in raw_keypairs[_CLEANUP_EXCLUDE_PROPERTY]])
 
     return Configuration(
         general_configuration=general_configuration,
