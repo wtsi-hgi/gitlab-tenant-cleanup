@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/wtsi-hgi/python-sequencescape-db.git
+	branch = develop
+	commit = 94bf380ec93e1adc4241fdf176bebf14548f39ad
+	parent = e005bfb32bc9fa0edbfbf0c358e989ea58f6fee4
+	cmdver = 0.3.1

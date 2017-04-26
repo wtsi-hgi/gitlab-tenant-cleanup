@@ -1,0 +1,17 @@
+language: python
+
+python:
+  - 3.5
+
+before_install:
+  - pip install codecov
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r test_requirements.txt
+
+script:
+  - nosetests -v --with-coverage --cover-package=sequencescape --cover-inclusive --exclude-test=sequencescape.tests._json_converters_test_factory.create_json_converter_test
+
+after_success:
+  - codecov
