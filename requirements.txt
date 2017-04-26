@@ -2,3 +2,4 @@ python-novaclient
 python-glanceclient
 boltons
 pyyaml
+sqlalchemy
