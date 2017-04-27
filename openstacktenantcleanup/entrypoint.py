@@ -66,9 +66,10 @@ def main():
     _logger.debug(f"Program configuration: {configuration}")
 
     tracking_database = configuration.general_configuration.tracking_database
+    if not os.path.isabs(tracking_database):
+        tracking_database = os.path.join(os.path.dirname(cli_configuration.config_location), tracking_database)
     if not os.path.exists(tracking_database):
         _logger.info(f"Creating tracking database: {tracking_database}")
-        # TODO: Handle relative database paths
         engine = create_engine(f"sqlite:///{tracking_database}")
         SqlAlchemyModel.metadata.create_all(bind=engine)
 
