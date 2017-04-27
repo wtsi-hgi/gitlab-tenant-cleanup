@@ -1,5 +1,10 @@
+# XXX: `requests` is not required by this program but it is to work around waring dependencies:
+# error: requests 2.13.0 is installed but requests!=2.12.2,!=2.13.0,>=2.10.0 is required by {'python-novaclient', 'keystoneauth1'}
+requests==2.12.5
+
 python-novaclient
 python-glanceclient
+python-keystoneclient
 boltons
 pyyaml
 sqlalchemy
