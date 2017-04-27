@@ -3,3 +3,4 @@ python-glanceclient
 boltons
 pyyaml
 sqlalchemy
+python-dateutil

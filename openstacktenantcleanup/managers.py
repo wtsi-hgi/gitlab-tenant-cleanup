@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
+from time import strptime
 
+from dateutil.parser import parse as parse_datetime
 from keystoneclient.v2_0.client import Client as KeystoneClient
 from glanceclient.client import Client as GlanceClient
 from novaclient.client import Client as NovaClient
@@ -8,6 +10,7 @@ from novaclient.v2.images import Image
 from novaclient.v2.keypairs import Keypair
 from novaclient.v2.servers import Server
 from typing import TypeVar, Generic, Set, Iterable
+
 
 from openstacktenantcleanup.models import OpenstackCredentials, OpenstackItem, OpenstackKeyPair, OpenstackInstance, \
     OpenstackImage, OpenstackIdentifier
@@ -20,12 +23,14 @@ class Manager(Generic[Managed, RawModel], metaclass=ABCMeta):
     """
     Manager for OpenStack items.
     """
-    def __init__(self, openstack_credentials: OpenstackCredentials):
+    # FIXME
+    # @abstractmethod
+    @property
+    def item_type(self):
         """
-        Constructor.
-        :param openstack_credentials: OpenStack credentials
+        TODO
+        :return: 
         """
-        self.openstack_credentials = openstack_credentials
 
     @abstractmethod
     def _get_by_id_raw(self, identifier: OpenstackIdentifier=None) -> RawModel:
@@ -56,6 +61,13 @@ class Manager(Generic[Managed, RawModel], metaclass=ABCMeta):
         Deletes an OpenStack item with the given identifier.
         :param item: the OpenStack item to delete
         """
+
+    def __init__(self, openstack_credentials: OpenstackCredentials):
+        """
+        Constructor.
+        :param openstack_credentials: OpenStack credentials
+        """
+        self.openstack_credentials = openstack_credentials
 
     def get_by_id(self, identifier: OpenstackIdentifier=None) -> Managed:
         """
@@ -112,6 +124,10 @@ class OpenstackKeyPairManager(_NovaManager[OpenstackKeyPair, Keypair]):
     """
     Manager for OpenStack key-pairs.
     """
+    @property
+    def item_type(self):
+        return OpenstackKeyPair
+
     def _get_by_id_raw(self, identifier: OpenstackIdentifier=None) -> RawModel:
         return self._client.keypairs.get(identifier)
 
@@ -132,6 +148,10 @@ class OpenstackInstanceManager(_NovaManager[OpenstackInstance, Server]):
     """
     Manager for OpenStack instances.
     """
+    @property
+    def item_type(self):
+        return OpenstackInstance
+
     def _get_by_id_raw(self, identifier: OpenstackIdentifier=None) -> RawModel:
         return self._client.servers.get(identifier)
 
@@ -142,8 +162,8 @@ class OpenstackInstanceManager(_NovaManager[OpenstackInstance, Server]):
         return OpenstackInstance(
             identifier=model.id,
             name=model.name,
-            created_at=model.created,
-            updated_at=model.updated,
+            created_at=parse_datetime(model.created),
+            updated_at=parse_datetime(model.updated),
             image=model.image["id"],
             key_name=model.key_name
         )
@@ -163,6 +183,10 @@ class OpenstackImageManager(Manager[OpenstackImage, Image]):
     Manager for OpenStack images.
     """
     GLANCE_VERSION = "2"
+
+    @property
+    def item_type(self):
+        return OpenstackImage
 
     def __init__(self, *args, **kwargs):
         """
@@ -185,8 +209,8 @@ class OpenstackImageManager(Manager[OpenstackImage, Image]):
         return OpenstackImage(
             identifier=model.id,
             name=model.name,
-            created_at=model.created_at,
-            updated_at=model.updated_at,
+            created_at=parse_datetime(model.created_at),
+            updated_at=parse_datetime(model.updated_at),
             protected=model.protected
         )
 

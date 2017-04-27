@@ -52,7 +52,7 @@ class TestParseConfiguration(unittest.TestCase):
     """
     def test_with_full_config(self):
         configuration = parse_configuration(_EXAMPLE_VALID_CONFIGURATION_LOCATION)
-        self.assertEqual(_EXAMPLE_VALID_CONFIGURATION, configuration)
+        self.assertEquals(_EXAMPLE_VALID_CONFIGURATION, configuration)
 
 
 if __name__ == "__main__":

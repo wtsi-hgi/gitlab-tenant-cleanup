@@ -29,7 +29,7 @@ class Tracker(metaclass=ABCMeta):
     @abstractmethod
     def _unregister(self, item: OpenstackItem):
         """
-        Unregister the existence of an item.
+        Un-register the existence of an item.
         :param item: the item that no longer exists
         """
 
@@ -44,8 +44,8 @@ class Tracker(metaclass=ABCMeta):
 
     def register(self, item: Union[OpenstackItem, Iterable[OpenstackItem]]):
         """
-        Register an item as having just come into existence.
-        :param item: the item that has come into existence
+        Register an item or items as having just come into existence.
+        :param item: the item or items that have come into existence
         """
         items = [item] if isinstance(item, OpenstackItem) else item
         for item in items:
@@ -53,11 +53,10 @@ class Tracker(metaclass=ABCMeta):
                 created = item.created_at if isinstance(item, Timestamped) else datetime.now()
                 self._register(item, created)
 
-    def unregister(self, item: OpenstackItem):
+    def unregister(self, item: Union[OpenstackItem, Iterable[OpenstackItem]]):
         """
-        TODO
-        :param item: 
-        :return: 
+        Un-register the existence of an item or items.
+        :param item: the item or items that no longer exists
         """
         items = [item] if isinstance(item, OpenstackItem) else item
         for item in items:

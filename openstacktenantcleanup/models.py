@@ -1,9 +1,10 @@
 from abc import ABCMeta
 from datetime import datetime
+from typing import NewType
 
 from openstacktenantcleanup.external.hgicommon.models import Model
 
-OpenstackIdentifier = str
+OpenstackIdentifier = NewType("OpenstackIdentifier", str)
 
 
 class OpenstackCredentials(Model):

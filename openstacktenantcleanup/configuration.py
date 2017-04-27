@@ -4,9 +4,14 @@ from logging import getLevelName
 
 import yaml
 from boltons.timeutils import parse_timedelta
-from typing import Pattern, List
+from typing import List, Iterable, Type, Dict, Any
 
+from openstacktenantcleanup.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
+    prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, created_exclude_detector, \
+    create_delete_if_older_than_detector
 from openstacktenantcleanup.external.hgicommon.models import Model
+from openstacktenantcleanup.managers import OpenstackInstanceManager, Manager, OpenstackImageManager, \
+    OpenstackKeyPairManager
 from openstacktenantcleanup.models import OpenstackCredentials
 
 _GENERAL_PROPERTY = "general"
@@ -32,24 +37,17 @@ class CleanupAreaConfiguration(Model):
     """
     Configuration for how an area (e.g. images, key-pairs) is to be cleaned.
     """
-    def __init__(self, remove_if_older_than: timedelta, excludes: List[Pattern], remove_only_if_unused: bool=True):
-        self.remove_if_older_than = remove_if_older_than
-        self.excludes = excludes
-        self.remove_only_if_unused = remove_only_if_unused
+    def __init__(self, prevent_delete_detectors: Iterable[PreventDeleteDetector]=None):
+        self.prevent_delete_detectors = prevent_delete_detectors
 
 
 class CleanupConfiguration(Model):
     """
-    Model
+    Configuration for how a set of areas are to be cleaned.
     """
-    def __init__(self, credentials: List[OpenstackCredentials]=None,
-                 instance_cleanup_configuration: CleanupAreaConfiguration=None,
-                 image_cleanup_configuration: CleanupAreaConfiguration=None,
-                 keypair_cleanup_configuration: CleanupAreaConfiguration=None):
+    def __init__(self, credentials: List[OpenstackCredentials]=None):
         self.credentials = credentials if credentials is not None else []
-        self.instance_cleanup_configuration = instance_cleanup_configuration
-        self.image_cleanup_configuration = image_cleanup_configuration
-        self.keypair_cleanup_configuration = keypair_cleanup_configuration
+        self.cleanup_areas: Dict[Type[Manager], CleanupAreaConfiguration] = {}
 
 
 class LogConfiguration(Model):
@@ -79,13 +77,23 @@ class Configuration(Model):
         self.cleanup_configurations = cleanup_configurations
 
 
-def _convert_to_timedelta(raw_timedelta: str) -> timedelta:
+def _create_common_prevent_delete_detectors(parent_property: Dict[str, Any]) -> List[PreventDeleteDetector]:
     """
-    Converts a human readable time delta (e.g. "1h") to the equivalent Python `timedelta`.
-    :param raw_timedelta: the human readable timestamp
-    :return: the equivalent Python `timedelta`
+    TODO
+    :param parent_property: 
+    :return: 
     """
-    return parse_timedelta(raw_timedelta)
+    detectors: List[PreventDeleteDetector] = []
+
+    if _CLEANUP_EXCLUDE_PROPERTY in parent_property:
+        excludes = [re.compile(exclude) for exclude in parent_property[_CLEANUP_EXCLUDE_PROPERTY]]
+        detectors.append(created_exclude_detector(excludes))
+
+    if _CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY in parent_property:
+        delete_if_older_than = parse_timedelta(parent_property[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY])
+        detectors.append(create_delete_if_older_than_detector(delete_if_older_than))
+
+    return detectors
 
 
 def parse_configuration(location: str):
@@ -99,7 +107,7 @@ def parse_configuration(location: str):
 
     raw_general = raw_configuration[_GENERAL_PROPERTY]
     general_configuration = GeneralConfiguration(
-        run_period=_convert_to_timedelta(raw_general[_GENERAL_RUN_EVERY_PROPERTY]),
+        run_period=parse_timedelta(raw_general[_GENERAL_RUN_EVERY_PROPERTY]),
         log=LogConfiguration(
             location=raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LOCATION_PROPERTY],
             level=getLevelName(raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LEVEL_PROPERTY].upper())
@@ -119,22 +127,24 @@ def parse_configuration(location: str):
 
         if _CLEANUP_IMAGES_PROPERTY in raw_cleanup:
             raw_images = raw_cleanup[_CLEANUP_IMAGES_PROPERTY]
-            cleanup_configuration.image_cleanup_configuration = CleanupAreaConfiguration(
-                remove_if_older_than=_convert_to_timedelta(raw_images[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-                excludes=[re.compile(exclude) for exclude in raw_images[_CLEANUP_EXCLUDE_PROPERTY]])
+            detectors = _create_common_prevent_delete_detectors(raw_images)
+            detectors.append(prevent_delete_protected_image_detector)
+            detectors.append(prevent_delete_image_in_use_detector)
+            cleanup_configuration.cleanup_areas[OpenstackImageManager] = CleanupAreaConfiguration(detectors)
     
         if _CLEANUP_INSTANCES_PROPERTY in raw_cleanup:
             raw_instances = raw_cleanup[_CLEANUP_INSTANCES_PROPERTY]
-            cleanup_configuration.instance_cleanup_configuration = CleanupAreaConfiguration(
-                remove_if_older_than=_convert_to_timedelta(raw_instances[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-                excludes=[re.compile(exclude) for exclude in raw_instances[_CLEANUP_EXCLUDE_PROPERTY]])
+            detectors = _create_common_prevent_delete_detectors(raw_instances)
+            cleanup_configuration.cleanup_areas[OpenstackInstanceManager] = CleanupAreaConfiguration(detectors)
 
         if _CLEANUP_KEY_PAIRS_PROPERTY in raw_cleanup:
             raw_keypairs = raw_cleanup[_CLEANUP_KEY_PAIRS_PROPERTY]
-            cleanup_configuration.keypair_cleanup_configuration = CleanupAreaConfiguration(
-                remove_only_if_unused=raw_keypairs[_CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY],
-                remove_if_older_than=_convert_to_timedelta(raw_keypairs[_CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY]),
-                excludes=[re.compile(exclude) for exclude in raw_keypairs[_CLEANUP_EXCLUDE_PROPERTY]])
+            detectors = _create_common_prevent_delete_detectors(raw_keypairs)
+
+            if raw_keypairs[_CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY]:
+                detectors.append(prevent_delete_key_pair_in_use_detector)
+
+            cleanup_configuration.cleanup_areas[OpenstackKeyPairManager] = CleanupAreaConfiguration(detectors)
 
     return Configuration(
         general_configuration=general_configuration,
