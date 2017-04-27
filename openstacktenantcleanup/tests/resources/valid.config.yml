@@ -7,7 +7,7 @@ general:
     level: warn
 
 cleanup:
-  - openstack_auth_url: http://example.com:5000/v2.0
+  - openstack_auth_url: http://example.com:5000/v2.0/
     tenant: my-tenant
     credentials:
       - username: my-username
