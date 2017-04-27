@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from typing import Callable, Tuple, Pattern, Iterable
 
-from openstacktenantcleanup.common import create_human_identifier
+from openstacktenantcleanup._common import create_human_identifier
 from openstacktenantcleanup.managers import OpenstackInstanceManager
 from openstacktenantcleanup.models import OpenstackItem, OpenstackCredentials, OpenstackImage, OpenstackKeypair
 from openstacktenantcleanup.tracking import Tracker

@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict
 
-from openstacktenantcleanup.common import create_human_identifier
+from openstacktenantcleanup._common import create_human_identifier
 from openstacktenantcleanup.configuration import Configuration
 from openstacktenantcleanup.detectors import PreventDeleteDetector
 from openstacktenantcleanup.managers import Manager, OpenstackKeypairManager
@@ -115,13 +115,13 @@ def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[Pre
     :return: 
     """
     items = set(manager.get_all())
-    registered = set(tracker.get_registered_identifiers(item_type=manager.item_type))
+    registered_identifiers = set(tracker.get_registered_identifiers(item_type=manager.item_type))
 
-    new_items = items - registered
+    new_items = {item for item in items if item.identifier not in registered_identifiers}
     tracker.register(new_items)
 
-    old_items = registered - items
-    tracker.unregister(old_items)
+    old_items_identifiers = registered_identifiers - {item.identifier for item in items}
+    tracker.unregister(old_items_identifiers)
 
     not_marked_for_deletion: List[ItemAndReasons] = []
     marked_for_deletion: List[ItemAndReasons] = []

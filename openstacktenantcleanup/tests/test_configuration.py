@@ -15,7 +15,9 @@ _EXAMPLE_VALID_GENERAL_CONFIGURATION = GeneralConfiguration(
     log=LogConfiguration(
         location="/my-log",
         level=getLevelName("WARN")
-    )
+    ),
+    tracking_database="tracking.sqlite",
+    max_simultaneous_deletes=8
 )
 _EXAMPLE_VALID_CREDENTIALS = [OpenstackCredentials(
     auth_url="http://example.com:5000/v2.0/",

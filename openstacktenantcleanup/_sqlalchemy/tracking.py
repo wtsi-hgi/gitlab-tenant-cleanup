@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from typing import Optional, Type, Collection
+from typing import Optional, Type, Collection, Union
 
 from openstacktenantcleanup._sqlalchemy._models import SqlAlchemyItemTracking, SqlAlchemyItem
 from openstacktenantcleanup.external.sequencescape.database_connector import SQLAlchemyDatabaseConnector
@@ -43,9 +43,10 @@ class SqlTracker(Tracker):
         session.commit()
         session.close()
 
-    def _unregister(self, item: OpenstackItem):
+    def _unregister(self, item: Union[OpenstackItem, OpenstackIdentifier]):
+        identifier = item.identifier if isinstance(item, OpenstackItem) else item
         session = self._database_connector.create_session()
-        sql_alchemy_item = session.query(SqlAlchemyItem).filter_by(id=item.identifier).first()
+        sql_alchemy_item = session.query(SqlAlchemyItem).filter_by(id=identifier).first()
         if sql_alchemy_item is not None:
             session.delete(sql_alchemy_item)
             session.commit()

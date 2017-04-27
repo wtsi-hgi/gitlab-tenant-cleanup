@@ -4,3 +4,4 @@ boltons
 pyyaml
 sqlalchemy
 python-dateutil
+APScheduler

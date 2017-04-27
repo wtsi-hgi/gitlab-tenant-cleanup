@@ -27,7 +27,7 @@ class Tracker(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def _unregister(self, item: OpenstackItem):
+    def _unregister(self, item: Union[OpenstackItem, OpenstackIdentifier]):
         """
         Un-register the existence of an item.
         :param item: the item that no longer exists
@@ -53,11 +53,11 @@ class Tracker(metaclass=ABCMeta):
                 created = item.created_at if isinstance(item, Timestamped) else datetime.now()
                 self._register(item, created)
 
-    def unregister(self, item: Union[OpenstackItem, Iterable[OpenstackItem]]):
+    def unregister(self, item: Union[OpenstackItem, Iterable[OpenstackItem], str, Iterable[str]]):
         """
         Un-register the existence of an item or items.
         :param item: the item or items that no longer exists
         """
-        items = [item] if isinstance(item, OpenstackItem) else item
+        items = [item] if isinstance(item, OpenstackItem) or isinstance(item, str) else item
         for item in items:
             self._unregister(item)

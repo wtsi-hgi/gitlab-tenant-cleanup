@@ -19,8 +19,10 @@ _GENERAL_RUN_EVERY_PROPERTY = "run-every"
 _GENERAL_LOG_PROPERTY = "log"
 _GENERAL_LOG_LOCATION_PROPERTY = "location"
 _GENERAL_LOG_LEVEL_PROPERTY = "level"
+_GENERAL_TRACKING_DATABASE_PROPERTY = "tracking-database"
+_GENERAL_MAX_SIMULTANEOUS_DELETES_PROPERTY = "max-simultaneous-deletes"
 _CLEANUP_PROPERTY = "cleanup"
-_CLEANUP_OPENSTACK_AUTH_URL_PROPERTY = "openstack_auth_url"
+_CLEANUP_OPENSTACK_AUTH_URL_PROPERTY = "openstack-auth-url"
 _CLEANUP_CREDENTIALS_PROPERTY = "credentials"
 _CLEANUP_CREDENTIALS_USERNAME_PROPERTY = "username"
 _CLEANUP_CREDENTIALS_PASSWORD_PROPERTY = "password"
@@ -31,6 +33,8 @@ _CLEANUP_KEY_PAIRS_PROPERTY = "key-pairs"
 _CLEANUP_REMOVE_IF_OLDER_THAN_PROPERTY = "remove-if-older-than"
 _CLEANUP_EXCLUDE_PROPERTY = "exclude"
 _CLEANUP_REMOVE_ONLY_IF_UNUSED_PROPERTY = "remove-only-if-unused"
+
+DEFAULT_MAX_SIMULTANEOUS_DELETES = 4
 
 
 class CleanupConfiguration(Model):
@@ -55,9 +59,12 @@ class GeneralConfiguration(Model):
     """
     General configuration.
     """
-    def __init__(self, run_period: timedelta=None, log: LogConfiguration=None):
+    def __init__(self, run_period: timedelta=None, log: LogConfiguration=None, tracking_database: str=None,
+                 max_simultaneous_deletes: int=DEFAULT_MAX_SIMULTANEOUS_DELETES):
         self.run_period = run_period
         self.log = log
+        self.tracking_database = tracking_database
+        self.max_simultaneous_deletes = max_simultaneous_deletes
 
 
 class Configuration(Model):
@@ -103,8 +110,11 @@ def parse_configuration(location: str):
         log=LogConfiguration(
             location=raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LOCATION_PROPERTY],
             level=getLevelName(raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LEVEL_PROPERTY].upper())
-        )
+        ),
+        tracking_database=raw_general[_GENERAL_TRACKING_DATABASE_PROPERTY],
     )
+    if _GENERAL_MAX_SIMULTANEOUS_DELETES_PROPERTY in raw_general:
+        general_configuration.max_simultaneous_deletes = raw_general[_GENERAL_MAX_SIMULTANEOUS_DELETES_PROPERTY]
 
     cleanup_configuration = CleanupConfiguration()
     for raw_cleanup in raw_configuration[_CLEANUP_PROPERTY]:

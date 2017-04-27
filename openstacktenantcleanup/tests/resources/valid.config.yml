@@ -5,9 +5,11 @@ general:
   log:
     location: /my-log
     level: warn
+  tracking-database: tracking.sqlite
+  max-simultaneous-deletes: 8
 
 cleanup:
-  - openstack_auth_url: http://example.com:5000/v2.0/
+  - openstack-auth-url: http://example.com:5000/v2.0/
     tenant: my-tenant
     credentials:
       - username: my-username
