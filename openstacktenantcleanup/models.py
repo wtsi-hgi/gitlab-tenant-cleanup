@@ -43,7 +43,7 @@ class OpenstackItem(Model, metaclass=ABCMeta):
         self.name = name
 
 
-class OpenstackKeyPair(OpenstackItem):
+class OpenstackKeypair(OpenstackItem):
     """
     A key-pair in OpenStack.
     """

@@ -10,7 +10,7 @@ from novaclient.v2.keypairs import Keypair
 from novaclient.v2.servers import Server
 from typing import TypeVar, Generic, Set, Iterable, Type
 
-from openstacktenantcleanup.models import OpenstackCredentials, OpenstackItem, OpenstackKeyPair, OpenstackInstance, \
+from openstacktenantcleanup.models import OpenstackCredentials, OpenstackItem, OpenstackKeypair, OpenstackInstance, \
     OpenstackImage, OpenstackIdentifier
 
 Managed = TypeVar("Managed", bound=OpenstackItem)
@@ -117,13 +117,13 @@ class _NovaManager(Generic[Managed, RawModel], Manager[Managed, RawModel], metac
                                   auth_url=self.openstack_credentials.auth_url)
 
 
-class OpenstackKeyPairManager(_NovaManager[OpenstackKeyPair, Keypair]):
+class OpenstackKeypairManager(_NovaManager[OpenstackKeypair, Keypair]):
     """
     Manager for OpenStack key-pairs.
     """
     @property
     def item_type(self):
-        return OpenstackKeyPair
+        return OpenstackKeypair
 
     def _get_by_id_raw(self, identifier: OpenstackIdentifier=None) -> RawModel:
         return self._client.keypairs.get(identifier)
@@ -131,8 +131,8 @@ class OpenstackKeyPairManager(_NovaManager[OpenstackKeyPair, Keypair]):
     def _get_all_raw(self) -> Iterable[RawModel]:
         return self._client.keypairs.list()
 
-    def _convert_raw(self, model: Keypair) -> OpenstackKeyPair:
-        return OpenstackKeyPair(
+    def _convert_raw(self, model: Keypair) -> OpenstackKeypair:
+        return OpenstackKeypair(
             identifier=model.name,
             name=model.name,
             fingerprint=model.fingerprint
