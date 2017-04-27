@@ -79,9 +79,9 @@ class Configuration(Model):
 
 def _create_common_prevent_delete_detectors(parent_property: Dict[str, Any]) -> List[PreventDeleteDetector]:
     """
-    TODO
-    :param parent_property: 
-    :return: 
+    Creates delete prevention detectors that are common to all area cleanups.
+    :param parent_property: the area cleanup configuration
+    :return: the created delete prevent detectors
     """
     detectors: List[PreventDeleteDetector] = []
 

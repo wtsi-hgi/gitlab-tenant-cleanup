@@ -9,7 +9,7 @@ OpenstackIdentifier = NewType("OpenstackIdentifier", str)
 
 class OpenstackCredentials(Model):
     """
-    TODO
+    Credentials used to login to OpenStack.
     """
     def __init__(self, auth_url: str, tenant: str, username: str, password: str):
         """
@@ -26,7 +26,7 @@ class OpenstackCredentials(Model):
 
 class Timestamped(Model, metaclass=ABCMeta):
     """
-    TODO
+    Timestamps.
     """
     def __init__(self, created_at: datetime=None, updated_at: datetime=None):
         self.created_at = created_at
@@ -35,7 +35,7 @@ class Timestamped(Model, metaclass=ABCMeta):
 
 class OpenstackItem(Model, metaclass=ABCMeta):
     """
-    TODO
+    An item in OpenStack.
     """
     def __init__(self, identifier: OpenstackIdentifier=None, name: str=None, **kwargs):
         super().__init__(**kwargs)
@@ -45,7 +45,7 @@ class OpenstackItem(Model, metaclass=ABCMeta):
 
 class OpenstackKeyPair(OpenstackItem):
     """
-    TODO
+    A key-pair in OpenStack.
     """
     def __init__(self, fingerprint: str=None, **kwargs):
         super().__init__(**kwargs)
@@ -54,7 +54,7 @@ class OpenstackKeyPair(OpenstackItem):
 
 class OpenstackInstance(OpenstackItem, Timestamped):
     """
-    TODO
+    An instance on OpenStack.
     """
     def __init__(self, image: str=None, key_name: str=None, **kwargs):
         super().__init__(**kwargs)
@@ -64,9 +64,8 @@ class OpenstackInstance(OpenstackItem, Timestamped):
 
 class OpenstackImage(OpenstackItem, Timestamped):
     """
-    TODO
+    An image on OpenStack.
     """
     def __init__(self, protected: bool=None, **kwargs):
         super().__init__(**kwargs)
         self.protected = protected
-

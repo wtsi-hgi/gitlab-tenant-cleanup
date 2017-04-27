@@ -1,16 +1,14 @@
 from abc import ABCMeta, abstractmethod
-from time import strptime
 
 from dateutil.parser import parse as parse_datetime
-from keystoneclient.v2_0.client import Client as KeystoneClient
 from glanceclient.client import Client as GlanceClient
+from keystoneclient.v2_0.client import Client as KeystoneClient
 from novaclient.client import Client as NovaClient
 from novaclient.exceptions import ClientException
 from novaclient.v2.images import Image
 from novaclient.v2.keypairs import Keypair
 from novaclient.v2.servers import Server
-from typing import TypeVar, Generic, Set, Iterable
-
+from typing import TypeVar, Generic, Set, Iterable, Type
 
 from openstacktenantcleanup.models import OpenstackCredentials, OpenstackItem, OpenstackKeyPair, OpenstackInstance, \
     OpenstackImage, OpenstackIdentifier
@@ -23,13 +21,12 @@ class Manager(Generic[Managed, RawModel], metaclass=ABCMeta):
     """
     Manager for OpenStack items.
     """
-    # FIXME
-    # @abstractmethod
     @property
-    def item_type(self):
+    @abstractmethod
+    def item_type(self) -> Type[OpenstackItem]:
         """
-        TODO
-        :return: 
+        Gets the type of items that the manager manages (i.e. the concrete `Managed` type).
+        :return: the item type
         """
 
     @abstractmethod
@@ -143,6 +140,7 @@ class OpenstackKeyPairManager(_NovaManager[OpenstackKeyPair, Keypair]):
 
     def _delete(self, identifier: OpenstackIdentifier=None):
         self._client.keypairs.delete(identifier)
+
 
 class OpenstackInstanceManager(_NovaManager[OpenstackInstance, Server]):
     """
