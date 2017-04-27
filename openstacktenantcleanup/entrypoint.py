@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 from argparse import ArgumentParser
+from datetime import datetime
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import create_engine
@@ -67,10 +68,13 @@ def main():
     tracking_database = configuration.general_configuration.tracking_database
     if not os.path.exists(tracking_database):
         _logger.info(f"Creating tracking database: {tracking_database}")
+        # TODO: Handle relative database paths
         engine = create_engine(f"sqlite:///{tracking_database}")
         SqlAlchemyModel.metadata.create_all(bind=engine)
 
     tracker = SqlTracker(f"sqlite:///{tracking_database}")
+
+    # TODO: setup logging
 
     def job():
         run(configuration, tracker, cli_configuration.dry_run)
@@ -79,8 +83,9 @@ def main():
         job()
     else:
         scheduler = BlockingScheduler()
-        scheduler.add_job(job, "interval", seconds=configuration.general_configuration.run_period.total_seconds())
-
+        scheduler.add_job(job, "interval", seconds=configuration.general_configuration.run_period.total_seconds(),
+                          coalesce=True, max_instances=1, next_run_time=datetime.now())
+        scheduler.start()
 
 
 if __name__ == "__main__":
