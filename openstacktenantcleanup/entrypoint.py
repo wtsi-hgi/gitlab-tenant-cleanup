@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 
 class CliConfiguration():
     """
-    TODO
+    CLI configuration.
     """
     def __init__(self, dry_run: bool=False, config_location: str=None, run_once: bool=False):
         self.dry_run = dry_run
@@ -29,24 +29,23 @@ class CliConfiguration():
 
 def parse_arguments(argument_list: List[str]) -> CliConfiguration:
     """
-    TODO
+    Parse the given CLI arguments.
     :return: 
     """
     parser = ArgumentParser(description="OpenStack Tenant Cleanup")
-    parser.add_argument("-d", "--dry-run", default=False, action="store_true", help="Runs but does not delete anything")
-    parser.add_argument("-s", "--single-run", default=False, action="store_true", help="Run once then stop")
-    parser.add_argument("-c", "--config", type=str, help="Location of the configuration file")
+    parser.add_argument("-d", "--dry-run", default=False, action="store_true", help="runs but does not delete anything")
+    parser.add_argument("-s", "--single-run", default=False, action="store_true", help="run once then stop")
+    parser.add_argument("config", metavar="configuration_location", type=str, help="location of the configuration file")
     arguments = parser.parse_args(argument_list)
     return CliConfiguration(arguments.dry_run, arguments.config, arguments.single_run)
 
 
 def run(configuration: Configuration, tracker: Tracker, dry_run: bool):
     """
-    TODO
-    :param configuration: 
-    :param tracker: 
-    :param dry_run: 
-    :return: 
+    Run the cleanup.
+    :param configuration: cleanup configuration
+    :param tracker: OpenStack item history tracker
+    :param dry_run: whether to run without actually deleting anythong
     """
     plans = create_clean_up_plans(configuration, tracker, dry_run=dry_run)
     _logger.info(create_human_explanation(plans))
@@ -57,8 +56,7 @@ def run(configuration: Configuration, tracker: Tracker, dry_run: bool):
 
 def main():
     """
-    TODO
-    :return: 
+    Entrypoint.
     """
     cli_configuration = parse_arguments(sys.argv[1:])
     _logger.debug(f"CLI configuration: {cli_configuration}")
@@ -78,7 +76,11 @@ def main():
     # TODO: setup logging
 
     def job():
-        run(configuration, tracker, cli_configuration.dry_run)
+        try:
+            run(configuration, tracker, cli_configuration.dry_run)
+        except Exception as e:
+            _logger.error(e)
+            raise
 
     if cli_configuration.run_once:
         job()
