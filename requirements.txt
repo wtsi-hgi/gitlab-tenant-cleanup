@@ -2,11 +2,11 @@
 # error: requests 2.13.0 is installed but requests!=2.12.2,!=2.13.0,>=2.10.0 is required by {'python-novaclient', 'keystoneauth1'}
 requests==2.12.5
 
-python-novaclient
-python-glanceclient
-python-keystoneclient
-boltons
-pyyaml
-sqlalchemy
-python-dateutil
-APScheduler
+python-novaclient==8.0.0
+python-glanceclient==2.6.0
+python-keystoneclient==3.10.0
+boltons==17.1.0
+pyyaml==3.12
+sqlalchemy==1.1.9
+python-dateutil==2.6.0
+APScheduler==3.3.1
