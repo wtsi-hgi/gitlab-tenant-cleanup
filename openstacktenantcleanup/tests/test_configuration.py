@@ -34,24 +34,23 @@ class TestParseConfiguration(unittest.TestCase):
     def test_parse_valid_configuration(self):
         configuration = parse_configuration(_EXAMPLE_VALID_CONFIGURATION_LOCATION)
 
-        self.assertEquals(_EXAMPLE_VALID_GENERAL_CONFIGURATION, configuration.general_configuration)
-        self.assertEquals(1, len(configuration.cleanup_configurations))
+        self.assertEqual(_EXAMPLE_VALID_GENERAL_CONFIGURATION, configuration.general_configuration)
+        self.assertEqual(1, len(configuration.cleanup_configurations))
 
         cleanup_configuration = configuration.cleanup_configurations[0]
-        self.assertEquals(_EXAMPLE_VALID_CREDENTIALS, cleanup_configuration.credentials)
+        self.assertEqual(_EXAMPLE_VALID_CREDENTIALS, cleanup_configuration.credentials)
 
         cleanup_areas = cleanup_configuration.cleanup_areas
-        self.assertEquals(3, len(cleanup_areas))
+        self.assertEqual(3, len(cleanup_areas))
 
         instance_prevent_delete_detectors = cleanup_areas[OpenstackInstanceManager]
-        self.assertEquals(2, len(instance_prevent_delete_detectors))
+        self.assertEqual(2, len(instance_prevent_delete_detectors))
 
         image_prevent_delete_detectors = cleanup_areas[OpenstackImageManager]
-        self.assertEquals(4, len(image_prevent_delete_detectors))
+        self.assertEqual(4, len(image_prevent_delete_detectors))
 
         keypair_prevent_delete_detectors = cleanup_areas[OpenstackKeypairManager]
-        self.assertEquals(3, len(keypair_prevent_delete_detectors))
-
+        self.assertEqual(3, len(keypair_prevent_delete_detectors))
 
 
 if __name__ == "__main__":

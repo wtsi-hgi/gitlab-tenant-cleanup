@@ -29,7 +29,7 @@ class TestSqlTracker(unittest.TestCase):
         items = {test_type(identifier=str(i)) for i in range(10)}
         self.tracker.register(items)
         registered = self.tracker.get_registered_identifiers(item_type=test_type)
-        self.assertEquals(set(registered), {item.identifier for item in items})
+        self.assertEqual(set(registered), {item.identifier for item in items})
 
     def test_register_with_created_time(self):
         item = OpenstackImage(identifier="123", created_at=datetime(2016, 1, 1))

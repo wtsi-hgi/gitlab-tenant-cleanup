@@ -118,6 +118,8 @@ frequency.
 ### Dragons
 - Not tested across different timezones.
 - Not tested in parallel (probably best to just use one instance to clean a tenant!).
+- Limited validation of configuration values - negative times and wrong times will undoubtedly cause weird things to 
+happen! 
 
 
 ## Development

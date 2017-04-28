@@ -7,7 +7,7 @@ import yaml
 from boltons.timeutils import parse_timedelta
 from typing import List, Iterable, Type, Dict, Any
 
-from openstacktenantcleanup._common import get_absolute_path_relative_to
+from openstacktenantcleanup.common import get_absolute_path_relative_to
 from openstacktenantcleanup.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
     prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, created_exclude_detector, \
     create_delete_if_older_than_detector

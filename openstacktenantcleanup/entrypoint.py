@@ -10,7 +10,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import create_engine
 from typing import List
 
-from openstacktenantcleanup._common import get_absolute_path_relative_to
+from openstacktenantcleanup.common import get_absolute_path_relative_to
 from openstacktenantcleanup._sqlalchemy._models import SqlAlchemyModel
 from openstacktenantcleanup._sqlalchemy.tracking import SqlTracker
 from openstacktenantcleanup.configuration import parse_configuration, Configuration, LoggingConfiguration

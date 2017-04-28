@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict
 
-from openstacktenantcleanup._common import create_human_identifier
+from openstacktenantcleanup.common import create_human_identifier
 from openstacktenantcleanup.configuration import Configuration
 from openstacktenantcleanup.detectors import PreventDeleteDetector
 from openstacktenantcleanup.managers import Manager, OpenstackKeypairManager
