@@ -35,7 +35,6 @@ def prevent_delete_image_in_use_detector(image: OpenstackImage, openstack_creden
     instance_manager = OpenstackInstanceManager(openstack_credentials)
     instances = instance_manager.get_all()
     for instance in instances:
-        # TODO: Check that both are the same ID type here
         if instance.image == image.identifier:
             return True, f"Image cannot be deleted because it is in use by the instance " \
                          f"{create_human_identifier(instance)}"

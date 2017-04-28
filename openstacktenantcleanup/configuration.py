@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import timedelta
 from logging import getLevelName
@@ -6,6 +7,7 @@ import yaml
 from boltons.timeutils import parse_timedelta
 from typing import List, Iterable, Type, Dict, Any
 
+from openstacktenantcleanup._common import get_absolute_path_relative_to
 from openstacktenantcleanup.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
     prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, created_exclude_detector, \
     create_delete_if_older_than_detector
@@ -16,7 +18,7 @@ from openstacktenantcleanup.models import OpenstackCredentials
 
 _GENERAL_PROPERTY = "general"
 _GENERAL_RUN_EVERY_PROPERTY = "run-every"
-_GENERAL_LOG_PROPERTY = "log"
+_GENERAL_LOGGING_PROPERTY = "log"
 _GENERAL_LOG_LOCATION_PROPERTY = "location"
 _GENERAL_LOG_LEVEL_PROPERTY = "level"
 _GENERAL_TRACKING_DATABASE_PROPERTY = "tracking-database"
@@ -46,7 +48,7 @@ class CleanupConfiguration(Model):
         self.cleanup_areas: Dict[Type[Manager], Iterable[PreventDeleteDetector]] = {}
 
 
-class LogConfiguration(Model):
+class LoggingConfiguration(Model):
     """
     Configuration for logging.
     """
@@ -59,10 +61,10 @@ class GeneralConfiguration(Model):
     """
     General configuration.
     """
-    def __init__(self, run_period: timedelta=None, log: LogConfiguration=None, tracking_database: str=None,
-                 max_simultaneous_deletes: int=DEFAULT_MAX_SIMULTANEOUS_DELETES):
+    def __init__(self, run_period: timedelta=None, logging_configuration: LoggingConfiguration=None,
+                 tracking_database: str=None, max_simultaneous_deletes: int=DEFAULT_MAX_SIMULTANEOUS_DELETES):
         self.run_period = run_period
-        self.log = log
+        self.logging_configuration = logging_configuration
         self.tracking_database = tracking_database
         self.max_simultaneous_deletes = max_simultaneous_deletes
 
@@ -105,11 +107,15 @@ def parse_configuration(location: str):
         raw_configuration = yaml.load(file)
 
     raw_general = raw_configuration[_GENERAL_PROPERTY]
+
+    log_location = raw_general[_GENERAL_LOGGING_PROPERTY][_GENERAL_LOG_LOCATION_PROPERTY]
+    if not os.path.isabs(log_location):
+        log_location = get_absolute_path_relative_to(log_location, location)
     general_configuration = GeneralConfiguration(
         run_period=parse_timedelta(raw_general[_GENERAL_RUN_EVERY_PROPERTY]),
-        log=LogConfiguration(
-            location=raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LOCATION_PROPERTY],
-            level=getLevelName(raw_general[_GENERAL_LOG_PROPERTY][_GENERAL_LOG_LEVEL_PROPERTY].upper())
+        logging_configuration=LoggingConfiguration(
+            location=log_location,
+            level=getLevelName(raw_general[_GENERAL_LOGGING_PROPERTY][_GENERAL_LOG_LEVEL_PROPERTY].upper())
         ),
         tracking_database=raw_general[_GENERAL_TRACKING_DATABASE_PROPERTY],
     )

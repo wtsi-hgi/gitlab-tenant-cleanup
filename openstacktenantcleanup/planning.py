@@ -76,16 +76,19 @@ def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
 
     with ThreadPoolExecutor(max_simultaneous_deletes) as executor:
         for item, deleter in all_delete_setups:
-            _logger.info(f"Deleting: {create_human_identifier(item)}")
+            _logger.info(f"Deleting item {create_human_identifier(item, True)}")
             executor.submit(deleter, item)
-    _logger.info("All deleted")
+
+    if len(all_delete_setups) > 0:
+        _logger.info(f"{len(all_delete_setups)} item(s) deleted")
+        _logger.debug(f"Deleted items: {[create_human_identifier(item, True) for item, _ in all_delete_setups]}")
 
 
 def create_human_explanation(plans: CleanUpPlans) -> str:
     """
-    TODO
-    :param plans: 
-    :return: 
+    Creates a human readable explaination of the given cleaup plans.
+    :param plans: the plans to explain
+    :return: human readable explaination
     """
     lines: List[str] = []
     for i in range(len(plans)):
@@ -97,9 +100,7 @@ def create_human_explanation(plans: CleanUpPlans) -> str:
                 lines.append(f"Deleting item {create_human_identifier(item, True)} as not prevented: {reasons}")
             for item, reasons in not_marked_for_deletion:
                 lines.append(f"Not deleting item {create_human_identifier(item, True)} as prevented: {reasons}")
-            lines.append("")
 
-        lines.append("")
         lines.append("")
 
     return "\n".join(lines)
@@ -147,10 +148,9 @@ def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[Pre
 
 def _create_delete(manager: Manager) -> Callable[[OpenstackItem], None]:
     """
-    TODO
-    :param manager: 
-    :param to_delete: 
-    :return: 
+    Creates a method that will use the given manager to delete a given item.
+    :param manager: the manager that will perform the delete
+    :return: the created method
     """
     def delete(to_delete: OpenstackItem):
         try:

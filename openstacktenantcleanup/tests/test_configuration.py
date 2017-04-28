@@ -3,7 +3,7 @@ import unittest
 from datetime import timedelta
 from logging import getLevelName
 
-from openstacktenantcleanup.configuration import parse_configuration, GeneralConfiguration, LogConfiguration
+from openstacktenantcleanup.configuration import parse_configuration, GeneralConfiguration, LoggingConfiguration
 from openstacktenantcleanup.managers import OpenstackInstanceManager, OpenstackKeypairManager, OpenstackImageManager
 from openstacktenantcleanup.models import OpenstackCredentials
 
@@ -12,7 +12,7 @@ _RESOURCE_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "
 _EXAMPLE_VALID_CONFIGURATION_LOCATION = os.path.join(_RESOURCE_DIRECTORY, "valid.config.yml")
 _EXAMPLE_VALID_GENERAL_CONFIGURATION = GeneralConfiguration(
     run_period=timedelta(hours=1),
-    log=LogConfiguration(
+    logging_configuration=LoggingConfiguration(
         location="/my-log",
         level=getLevelName("WARN")
     ),
