@@ -7,6 +7,7 @@
 This software can help prevent your OpenStack tenants (particularly ones where you run CI!) from becoming full of old 
 images, instances and key-pairs.
 
+
 ## Features
 - Cleans images, instances and key-pairs based on their age.
 - Controls to prevent deletion based on name and whether they are in use.
@@ -14,27 +15,22 @@ images, instances and key-pairs.
 - Non-destructive dry-mode.
 - Can clean up multiple tenants.
 
+
 ## How To Use
-### Installation
-#### Local
-Prerequisites:
-- python >= 3.6
+### Usage
+```bash
+usage: openstack-tenant-cleanup [-h] [-d] [-s] configuration_location
 
-Bleeding edge versions can be installed directly from GitHub:
-```bash
-$ git clone https://github.com/wtsi-hgi/openstack-tenant-cleanup.git
-$ cd openstack-tenant-cleanup
-$ python setup.py install
-```
-or
-```bash
-$ pip install git+https://github.com/wtsi-hgi/openstack-tenant-cleanup.git@<commit_id_or_branch_or_tag>#egg=openstacktenantcleanup
-```
+OpenStack Tenant Cleanup
 
-#### Docker
-Run in Docker container using:
-```bash
-docker run -d -v ${directoryWithMyConfig}:/config quay.io/wtsi-hgi/openstack-tenant-cleanup /config/my-config.yml
+positional arguments:
+  configuration_location
+                        location of the configuration file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --dry-run         runs but does not delete anything
+  -s, --single-run      run once then stop
 ```
 
 ### Configuration
@@ -89,6 +85,29 @@ this).
 - Multiple credentials can be supplied for a tenant to clean up key-pairs that are owned by different users. For all 
 other clean up areas, only the first credentials in the list are used.
 
+### Installation
+#### Local
+Prerequisites:
+- python >= 3.6
+
+Bleeding edge versions can be installed directly from GitHub:
+```bash
+$ git clone https://github.com/wtsi-hgi/openstack-tenant-cleanup.git
+$ cd openstack-tenant-cleanup
+$ python setup.py install
+```
+or
+```bash
+$ pip install git+https://github.com/wtsi-hgi/openstack-tenant-cleanup.git@<commit_id_or_branch_or_tag>#egg=openstacktenantcleanup
+```
+
+#### Docker
+Run in Docker container using:
+```bash
+docker run -d -v ${directoryWithMyConfig}:/config quay.io/wtsi-hgi/openstack-tenant-cleanup /config/my-config.yml
+```
+
+
 ## Known Issues
 ### Limitations
 - OpenStack (or at least in the setup we have) does not provide created timestamps for key-pairs. In order to be able
@@ -100,3 +119,25 @@ frequency.
 - Not tested across different timezones.
 - Not tested in parallel (probably best to just use one instance to clean a tenant!).
 
+
+## Development
+### Setup
+Prerequisites:
+- python >= 3.6
+
+Install both library dependencies and the dependencies needed for testing:
+```bash
+$ pip install -q -r test_requirements.txt
+```
+
+### Testing
+Using unittest (from the project directory):
+```bash
+$ PYTHONPATH=. python -m unittest discover -v -s .
+```
+
+
+## License
+[MIT license](LICENSE.txt).
+
+Copyright (c) 2017 Genome Research Limited
