@@ -4,7 +4,7 @@ from sqlalchemy import Column, ForeignKey, Enum, DateTime, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
 
-from openstacktenantcleanup.models import OpenstackItem
+from openstacktenantcleaner.models import OpenstackItem
 
 _item_types = {cls.__name__ for cls in OpenstackItem.__subclasses__()}
 _item_types_dict = ({item_type: item_type for item_type in _item_types})

@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/wtsi-hgi/openstack-tenant-cleanup.svg?branch=master)](https://travis-ci.org/wtsi-hgi/openstack-tenant-cleanup)
-[![codecov](https://codecov.io/gh/wtsi-hgi/openstack-tenant-cleanup/branch/master/graph/badge.svg)](https://codecov.io/gh/wtsi-hgi/openstack-tenant-cleanup)
-[![Docker Repository on Quay](https://quay.io/repository/wtsi-hgi/openstack-tenant-cleanup/status "Docker Repository on Quay")](https://quay.io/repository/wtsi-hgi/openstack-tenant-cleanup)
+[![Build Status](https://travis-ci.org/wtsi-hgi/openstack-tenant-cleaner.svg?branch=master)](https://travis-ci.org/wtsi-hgi/openstack-tenant-cleaner)
+[![codecov](https://codecov.io/gh/wtsi-hgi/openstack-tenant-cleaner/branch/master/graph/badge.svg)](https://codecov.io/gh/wtsi-hgi/openstack-tenant-cleaner)
+[![Docker Repository on Quay](https://quay.io/repository/wtsi-hgi/openstack-tenant-cleaner/status "Docker Repository on Quay")](https://quay.io/repository/wtsi-hgi/openstack-tenant-cleaner)
 
-# OpenStack Tenant Cleanup
+# OpenStack Tenant Cleaner
 ## Introduction
 This software can help prevent your OpenStack tenants (particularly ones where you run CI!) from becoming full of old 
 images, instances and key-pairs.
@@ -19,9 +19,9 @@ images, instances and key-pairs.
 ## How To Use
 ### Usage
 ```bash
-usage: openstack-tenant-cleanup [-h] [-d] [-s] configuration_location
+usage: openstack-tenant-cleaner [-h] [-d] [-s] configuration_location
 
-OpenStack Tenant Cleanup
+OpenStack Tenant Cleaner
 
 positional arguments:
   configuration_location
@@ -92,19 +92,19 @@ Prerequisites:
 
 Bleeding edge versions can be installed directly from GitHub:
 ```bash
-$ git clone https://github.com/wtsi-hgi/openstack-tenant-cleanup.git
-$ cd openstack-tenant-cleanup
+$ git clone https://github.com/wtsi-hgi/openstack-tenant-cleaner.git
+$ cd openstack-tenant-cleaner
 $ python setup.py install
 ```
 or
 ```bash
-$ pip install git+https://github.com/wtsi-hgi/openstack-tenant-cleanup.git@<commit_id_or_branch_or_tag>#egg=openstacktenantcleanup
+$ pip install git+https://github.com/wtsi-hgi/openstack-tenant-cleaner.git@master#egg=openstacktenantcleaner
 ```
 
 #### Docker
 Run in Docker container using:
 ```bash
-docker run -d -v ${directoryWithMyConfig}:/config quay.io/wtsi-hgi/openstack-tenant-cleanup /config/my-config.yml
+docker run -d -v ${directoryWithMyConfig}:/config quay.io/wtsi-hgi/openstack-tenant-cleaner /config/my-config.yml
 ```
 
 

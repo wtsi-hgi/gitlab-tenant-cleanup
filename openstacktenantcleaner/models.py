@@ -2,7 +2,7 @@ from abc import ABCMeta
 from datetime import datetime
 from typing import NewType
 
-from openstacktenantcleanup.external.hgicommon.models import Model
+from openstacktenantcleaner.external.hgicommon.models import Model
 
 OpenstackIdentifier = NewType("OpenstackIdentifier", str)
 

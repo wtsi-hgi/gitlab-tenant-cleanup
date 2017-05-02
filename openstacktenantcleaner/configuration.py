@@ -7,14 +7,14 @@ import yaml
 from boltons.timeutils import parse_timedelta
 from typing import List, Iterable, Type, Dict, Any
 
-from openstacktenantcleanup.common import get_absolute_path_relative_to
-from openstacktenantcleanup.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
+from openstacktenantcleaner.common import get_absolute_path_relative_to
+from openstacktenantcleaner.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
     prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, created_exclude_detector, \
     create_delete_if_older_than_detector
-from openstacktenantcleanup.external.hgicommon.models import Model
-from openstacktenantcleanup.managers import OpenstackInstanceManager, Manager, OpenstackImageManager, \
+from openstacktenantcleaner.external.hgicommon.models import Model
+from openstacktenantcleaner.managers import OpenstackInstanceManager, Manager, OpenstackImageManager, \
     OpenstackKeypairManager
-from openstacktenantcleanup.models import OpenstackCredentials
+from openstacktenantcleaner.models import OpenstackCredentials
 
 _GENERAL_PROPERTY = "general"
 _GENERAL_RUN_EVERY_PROPERTY = "run-every"

@@ -1,9 +1,9 @@
 import unittest
 from datetime import datetime, timedelta
 
-from openstacktenantcleanup._sqlalchemy.tracking import SqlTracker
-from openstacktenantcleanup.external.sequencescape.stub_database import create_stub_database
-from openstacktenantcleanup.models import OpenstackKeypair, OpenstackImage, OpenstackInstance
+from openstacktenantcleaner._sqlalchemy.tracking import SqlTracker
+from openstacktenantcleaner.external.sequencescape.stub_database import create_stub_database
+from openstacktenantcleaner.models import OpenstackKeypair, OpenstackImage, OpenstackInstance
 
 
 class TestSqlTracker(unittest.TestCase):

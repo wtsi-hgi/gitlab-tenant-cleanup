@@ -9,17 +9,17 @@ except ImportError:
         return open(file, "r").read()
 
 setup(
-    name="openstack-tenant-cleanup",
+    name="openstack-tenant-cleaner",
     version="1.0.0",
     packages=find_packages(exclude=["tests"]),
     install_requires=open("requirements.txt", "r").readlines(),
-    url="https://github.com/wtsi-hgi/openstack-tenant-cleanup",
+    url="https://github.com/wtsi-hgi/openstack-tenant-cleaner",
     license="MIT",
     description="Cleans up old images, instances and keys in an OpenStack tenant based on a configuration",
     long_description=read_markdown("README.md"),
     entry_points={
         "console_scripts": [
-            "openstack-tenant-cleanup=openstacktenantcleanup.entrypoint:main",
+            "openstack-tenant-cleaner=openstacktenantcleaner.entrypoint:main",
         ]
     }
 )

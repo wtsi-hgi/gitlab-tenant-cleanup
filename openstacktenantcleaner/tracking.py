@@ -3,7 +3,7 @@ from datetime import timedelta, datetime
 
 from typing import Optional, Type, Iterable, Union, Collection
 
-from openstacktenantcleanup.models import OpenstackItem, Timestamped, OpenstackIdentifier
+from openstacktenantcleaner.models import OpenstackItem, Timestamped, OpenstackIdentifier
 
 
 class Tracker(metaclass=ABCMeta):

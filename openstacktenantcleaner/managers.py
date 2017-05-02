@@ -10,7 +10,7 @@ from novaclient.v2.keypairs import Keypair
 from novaclient.v2.servers import Server
 from typing import TypeVar, Generic, Set, Iterable, Type
 
-from openstacktenantcleanup.models import OpenstackCredentials, OpenstackItem, OpenstackKeypair, OpenstackInstance, \
+from openstacktenantcleaner.models import OpenstackCredentials, OpenstackItem, OpenstackKeypair, OpenstackInstance, \
     OpenstackImage, OpenstackIdentifier
 
 Managed = TypeVar("Managed", bound=OpenstackItem)

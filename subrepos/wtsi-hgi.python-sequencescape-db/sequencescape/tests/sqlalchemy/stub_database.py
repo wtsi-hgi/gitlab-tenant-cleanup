@@ -5,7 +5,7 @@ from typing import Tuple
 import atexit
 from sqlalchemy import create_engine
 
-from openstacktenantcleanup._sqlalchemy._models import SqlAlchemyModel as SQLAlchemyModel
+from openstacktenantcleaner._sqlalchemy._models import SqlAlchemyModel as SQLAlchemyModel
 
 
 def create_stub_database() -> Tuple[str, str]:

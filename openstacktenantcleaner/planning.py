@@ -3,12 +3,12 @@ from concurrent.futures import ThreadPoolExecutor
 
 from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict
 
-from openstacktenantcleanup.common import create_human_identifier
-from openstacktenantcleanup.configuration import Configuration
-from openstacktenantcleanup.detectors import PreventDeleteDetector
-from openstacktenantcleanup.managers import Manager, OpenstackKeypairManager
-from openstacktenantcleanup.models import OpenstackItem
-from openstacktenantcleanup.tracking import Tracker
+from openstacktenantcleaner.common import create_human_identifier
+from openstacktenantcleaner.configuration import Configuration
+from openstacktenantcleaner.detectors import PreventDeleteDetector
+from openstacktenantcleaner.managers import Manager, OpenstackKeypairManager
+from openstacktenantcleaner.models import OpenstackItem
+from openstacktenantcleaner.tracking import Tracker
 
 ItemAndReasons = Tuple[OpenstackItem, Collection[str]]
 DeleteSetup = Tuple[OpenstackItem, Callable[[OpenstackItem], None]]

@@ -10,12 +10,12 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import create_engine
 from typing import List
 
-from openstacktenantcleanup.common import get_absolute_path_relative_to
-from openstacktenantcleanup._sqlalchemy._models import SqlAlchemyModel
-from openstacktenantcleanup._sqlalchemy.tracking import SqlTracker
-from openstacktenantcleanup.configuration import parse_configuration, Configuration, LoggingConfiguration
-from openstacktenantcleanup.planning import create_clean_up_plans, create_human_explanation, execute_plans
-from openstacktenantcleanup.tracking import Tracker
+from openstacktenantcleaner.common import get_absolute_path_relative_to
+from openstacktenantcleaner._sqlalchemy._models import SqlAlchemyModel
+from openstacktenantcleaner._sqlalchemy.tracking import SqlTracker
+from openstacktenantcleaner.configuration import parse_configuration, Configuration, LoggingConfiguration
+from openstacktenantcleaner.planning import create_clean_up_plans, create_human_explanation, execute_plans
+from openstacktenantcleaner.tracking import Tracker
 
 # TODO: these should be configurable
 MAX_LOG_FILE_SIZE_IN_BYTES = 100 * 1024 * 1024

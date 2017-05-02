@@ -1,6 +1,6 @@
 import os
 
-from openstacktenantcleanup.models import OpenstackItem
+from openstacktenantcleaner.models import OpenstackItem
 
 
 def create_human_identifier(item: OpenstackItem, include_type: bool=False) -> str:
