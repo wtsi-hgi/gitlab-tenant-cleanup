@@ -3,4 +3,5 @@ branch = True
 source = .
 omit =
     openstacktenantcleanup/tests/*
+    subrepos/*
 parallel = True
