@@ -26,8 +26,6 @@ from abc import ABCMeta
 from enum import Enum, unique
 from typing import Generic, TypeVar, Set
 
-from openstacktenantcleaner.external.hgicommon.enums import ComparisonOperator
-
 
 class Model(metaclass=ABCMeta):
     """
@@ -55,16 +53,6 @@ class Model(metaclass=ABCMeta):
 
     def __hash__(self):
         return hash(str(self))
-
-
-class SearchCriterion(Model):
-    """
-    Model of an attribute search criterion.
-    """
-    def __init__(self, attribute: str, value: str, comparison_operator: ComparisonOperator=ComparisonOperator.EQUALS):
-        self.attribute = attribute
-        self.value = value
-        self.comparison_operator = comparison_operator
 
 
 # The type of the object that is registered
