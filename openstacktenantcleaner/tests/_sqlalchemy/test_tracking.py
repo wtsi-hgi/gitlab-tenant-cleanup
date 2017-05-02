@@ -22,7 +22,7 @@ class TestSqlTracker(unittest.TestCase):
         items = [OpenstackKeypair(identifier="1"), OpenstackImage(identifier="2"), OpenstackInstance(identifier="3")]
         self.tracker.register(items)
         registered = self.tracker.get_registered_identifiers()
-        self.assertEquals(set(registered), {item.identifier for item in items})
+        self.assertEqual(set(registered), {item.identifier for item in items})
 
     def test_get_registered_identifiers_of_type(self):
         test_type = OpenstackKeypair
