@@ -42,7 +42,7 @@ def _parse_arguments(argument_list: List[str]) -> _CliConfiguration:
     Parse the given CLI arguments.
     :return: CLI arguments
     """
-    parser = ArgumentParser(description="OpenStack Tenant Cleanup")
+    parser = ArgumentParser(description="OpenStack Tenant Cleaner")
     parser.add_argument("-d", "--dry-run", default=False, action="store_true", help="runs but does not delete anything")
     parser.add_argument("-s", "--single-run", default=False, action="store_true", help="run once then stop")
     parser.add_argument("config", metavar="configuration_location", type=str, help="location of the configuration file")
@@ -72,8 +72,8 @@ def _configure_logging(logging_configuration: LoggingConfiguration):
 
 def run(configuration: Configuration, tracker: Tracker, dry_run: bool):
     """
-    Run the cleanup.
-    :param configuration: cleanup configuration
+    Run the cleaner.
+    :param configuration: cleaner configuration
     :param tracker: OpenStack item history tracker
     :param dry_run: whether to run without actually deleting anything
     """
@@ -92,8 +92,8 @@ def run(configuration: Configuration, tracker: Tracker, dry_run: bool):
 
 def run_periodically(configuration: Configuration, tracker: Tracker, dry_run: bool):
     """
-    Runs the cleanup periodically.
-    :param configuration: cleanup configuration
+    Runs the cleaner periodically.
+    :param configuration: cleaner configuration
     :param tracker: OpenStack item history tracker
     :param dry_run: whether to run without actually deleting anything
     """
