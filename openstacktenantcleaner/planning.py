@@ -20,23 +20,22 @@ _logger = logging.getLogger(__name__)
 
 def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_run: bool=True) -> CleanUpPlans:
     """
-    TODO
-    :param configuration: 
-    :param tracker: 
-    :param dry_run: 
-    :return: 
+    Creates plans on what needs to be cleaned up based on the given configuration.
+    :param configuration: the clean-up configuration
+    :param tracker: OpenStack item tracker
+    :param dry_run: will not plan to delete anything if `True`
+    :return: the created clean-up plans
     """
-    cleaup_plans: CleanUpPlans = []
+    plans: CleanUpPlans = []
 
-    # TODO: cleanup in order: instances first, others next
-    for cleanup_configuration in configuration.cleanup_configurations:
-        cleanup_areas_plans = {}
+    for clean_up_configuration in configuration.clean_up_configurations:
+        clean_up_areas_plans = {}
 
-        for manager_type, prevent_delete_detectors in cleanup_configuration.cleanup_areas.items():
+        for manager_type, prevent_delete_detectors in clean_up_configuration.areas.items():
             # Need to use all credentials when cleaning up keys, as they can only be removed by the account that created
             # them
-            credentials_to_use = [cleanup_configuration.credentials[0]] if manager_type != OpenstackKeypairManager \
-                else cleanup_configuration.credentials
+            credentials_to_use = [clean_up_configuration.credentials[0]] if manager_type != OpenstackKeypairManager \
+                else clean_up_configuration.credentials
 
             all_area_delete_setups: List[DeleteSetup] = []
             all_area_marked_for_deletion: List[ItemAndReasons] = []
@@ -54,20 +53,20 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
                 all_area_marked_for_deletion += marked_for_deletion
                 all_area_not_marked_for_deletion += not_marked_for_deletion
 
-            cleanup_areas_plans[manager_type] = all_area_delete_setups, all_area_marked_for_deletion, \
-                                                    all_area_not_marked_for_deletion
+            clean_up_areas_plans[manager_type] = all_area_delete_setups, all_area_marked_for_deletion, \
+                                                 all_area_not_marked_for_deletion
 
-        cleaup_plans.append(cleanup_areas_plans)
+        plans.append(clean_up_areas_plans)
 
-    return cleaup_plans
+    return plans
 
 
 def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
     """
-    TODO
-    :param plans: 
-    :param max_simultaneous_deletes: 
-    :return: 
+    Execute the given clean-up plans.
+    :param plans: the clean-up plans
+    :param max_simultaneous_deletes: the maximum number of OpenStack items to delete simultaneously. This only applies
+    within the method call (it is not global)
     """
     all_delete_setups: List[DeleteSetup] = []
     for plan in plans:
@@ -86,9 +85,9 @@ def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
 
 def create_human_explanation(plans: CleanUpPlans) -> str:
     """
-    Creates a human readable explaination of the given cleaup plans.
+    Creates a human readable explanation of the given cleanup plans.
     :param plans: the plans to explain
-    :return: human readable explaination
+    :return: human readable explanation
     """
     lines: List[str] = []
     for i in range(len(plans)):
@@ -109,11 +108,13 @@ def create_human_explanation(plans: CleanUpPlans) -> str:
 def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[PreventDeleteDetector], tracker: Tracker) \
         -> Tuple[List[ItemAndReasons], List[ItemAndReasons]]:
     """
-    TODO
-    :param manager: 
-    :param prevent_delete_detectors: 
-    :param tracker: 
-    :return: 
+    Creates a report of what can be cleaned up in an area controlled by the given manager.
+    :param manager: the OpenStack area manager, where the area could be instances, keys, etc.
+    :param prevent_delete_detectors: the detectors that are to be used to determine if an item should not be deleted
+    :param tracker: OpenStack item tracker
+    :return: tuple where the first item is a list of OpenStack items that have been identified as can be deleted, along 
+    with the reasoning for this decision, and the second a list and reasoning of OpenStack items that should not be 
+    deleted 
     """
     items = set(manager.get_all())
     registered_identifiers = set(tracker.get_registered_identifiers(item_type=manager.item_type))

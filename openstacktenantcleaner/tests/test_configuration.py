@@ -7,7 +7,7 @@ from openstacktenantcleaner.configuration import parse_configuration, GeneralCon
 from openstacktenantcleaner.managers import OpenstackInstanceManager, OpenstackKeypairManager, OpenstackImageManager
 from openstacktenantcleaner.models import OpenstackCredentials
 
-_RESOURCE_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources")
+_RESOURCE_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_resources")
 
 _EXAMPLE_VALID_CONFIGURATION_LOCATION = os.path.join(_RESOURCE_DIRECTORY, "valid.config.yml")
 _EXAMPLE_VALID_GENERAL_CONFIGURATION = GeneralConfiguration(
@@ -35,21 +35,21 @@ class TestParseConfiguration(unittest.TestCase):
         configuration = parse_configuration(_EXAMPLE_VALID_CONFIGURATION_LOCATION)
 
         self.assertEqual(_EXAMPLE_VALID_GENERAL_CONFIGURATION, configuration.general_configuration)
-        self.assertEqual(1, len(configuration.cleanup_configurations))
+        self.assertEqual(1, len(configuration.clean_up_configurations))
 
-        cleanup_configuration = configuration.cleanup_configurations[0]
-        self.assertEqual(_EXAMPLE_VALID_CREDENTIALS, cleanup_configuration.credentials)
+        clean_up_configuration = configuration.clean_up_configurations[0]
+        self.assertEqual(_EXAMPLE_VALID_CREDENTIALS, clean_up_configuration.credentials)
 
-        cleanup_areas = cleanup_configuration.cleanup_areas
-        self.assertEqual(3, len(cleanup_areas))
+        areas = clean_up_configuration.areas
+        self.assertEqual(3, len(areas))
 
-        instance_prevent_delete_detectors = cleanup_areas[OpenstackInstanceManager]
+        instance_prevent_delete_detectors = areas[OpenstackInstanceManager]
         self.assertEqual(2, len(instance_prevent_delete_detectors))
 
-        image_prevent_delete_detectors = cleanup_areas[OpenstackImageManager]
+        image_prevent_delete_detectors = areas[OpenstackImageManager]
         self.assertEqual(4, len(image_prevent_delete_detectors))
 
-        keypair_prevent_delete_detectors = cleanup_areas[OpenstackKeypairManager]
+        keypair_prevent_delete_detectors = areas[OpenstackKeypairManager]
         self.assertEqual(3, len(keypair_prevent_delete_detectors))
 
 
