@@ -6,7 +6,7 @@ from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict
 from openstacktenantcleaner.common import create_human_identifier
 from openstacktenantcleaner.configuration import Configuration
 from openstacktenantcleaner.detectors import PreventDeleteDetector
-from openstacktenantcleaner.managers import Manager, OpenstackKeypairManager
+from openstacktenantcleaner.managers import Manager, OpenstackKeypairManager, OpenstackInstanceManager
 from openstacktenantcleaner.models import OpenstackItem
 from openstacktenantcleaner.tracking import Tracker
 
@@ -31,7 +31,7 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
     for clean_up_configuration in configuration.clean_up_configurations:
         clean_up_areas_plans = {}
 
-        for manager_type, prevent_delete_detectors in clean_up_configuration.areas.items():
+        for manager_type, prevent_delete_detectors in sort_clean_up_areas(clean_up_configuration.areas.items()):
             # Need to use all credentials when cleaning up keys, as they can only be removed by the account that created
             # them
             credentials_to_use = [clean_up_configuration.credentials[0]] if manager_type != OpenstackKeypairManager \
@@ -59,6 +59,23 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
         plans.append(clean_up_areas_plans)
 
     return plans
+
+
+def sort_clean_up_areas(areas: Iterable[Tuple[Type[Manager], Iterable[PreventDeleteDetector]]]) -> \
+        List[Tuple[Type[Manager], Iterable[PreventDeleteDetector]]]:
+    """
+    Sorts the clean up areas such that instances are dealt with first, as if they are deleted, it may allow keys and
+    images to also be deleted.
+    :param areas: areas
+    :return: sorted areas
+    """
+    ordered: List[Tuple[Type[Manager], Iterable[PreventDeleteDetector]]] = []
+    for area in areas:
+        if area[0] == OpenstackInstanceManager:
+            ordered.insert(0, area)
+        else:
+            ordered.append(area)
+    return ordered
 
 
 def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
