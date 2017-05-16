@@ -21,6 +21,6 @@ def get_absolute_path_relative_to(path: str, relative_to: str) -> str:
     :param relative_to: path prefix
     :return: the absolute path
     """
-    if not os.path.abspath(path):
+    if os.path.isabs(path):
         raise ValueError("The given path is not relative")
     return os.path.join(os.path.dirname(relative_to), path)
