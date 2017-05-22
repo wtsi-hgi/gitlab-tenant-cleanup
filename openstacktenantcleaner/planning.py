@@ -1,7 +1,7 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
 
-from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict
+from typing import List, Iterable, Tuple, Collection, Callable, Type, Dict, Set
 
 from openstacktenantcleaner.common import create_human_identifier
 from openstacktenantcleaner.configuration import Configuration
@@ -12,13 +12,13 @@ from openstacktenantcleaner.tracking import Tracker
 
 ItemAndReasons = Tuple[OpenstackItem, Collection[str]]
 DeleteSetup = Tuple[OpenstackItem, Callable[[OpenstackItem], None]]
-CleanUpPlans = List[Dict[Type[Manager],
-                         Tuple[Collection[DeleteSetup], Collection[ItemAndReasons], Collection[ItemAndReasons]]]]
+CleanUpPlan = Dict[Type[Manager],
+                         Tuple[Collection[DeleteSetup], Collection[ItemAndReasons], Collection[ItemAndReasons]]]
 
 _logger = logging.getLogger(__name__)
 
 
-def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_run: bool=True) -> CleanUpPlans:
+def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_run: bool=True) -> List[CleanUpPlan]:
     """
     Creates plans on what needs to be cleaned up based on the given configuration.
     :param configuration: the clean-up configuration
@@ -26,10 +26,10 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
     :param dry_run: will not plan to delete anything if `True`
     :return: the created clean-up plans
     """
-    plans: CleanUpPlans = []
+    plans: List[CleanUpPlan] = []
 
     for clean_up_configuration in configuration.clean_up_configurations:
-        clean_up_areas_plans = {}
+        clean_up_areas_plans: CleanUpPlan = {}
 
         for manager_type, prevent_delete_detectors in sort_clean_up_areas(clean_up_configuration.areas.items()):
             # Need to use all credentials when cleaning up keys, as they can only be removed by the account that created
@@ -42,9 +42,11 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
             all_area_not_marked_for_deletion: List[ItemAndReasons] = []
 
             for credentials in credentials_to_use:
+                already_marked_for_deletion = {item_and_reasons[0] for item_and_reasons in
+                                               {plan_details[1] for plan_details in clean_up_areas_plans.values()}}
                 manager = manager_type(credentials)
                 marked_for_deletion, not_marked_for_deletion = _create_area_report(
-                    manager, prevent_delete_detectors, tracker)
+                    manager, prevent_delete_detectors, tracker, already_marked_for_deletion)
 
                 if not dry_run:
                     for item, _ in marked_for_deletion:
@@ -78,7 +80,7 @@ def sort_clean_up_areas(areas: Iterable[Tuple[Type[Manager], Iterable[PreventDel
     return ordered
 
 
-def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
+def execute_plans(plans: List[CleanUpPlan], max_simultaneous_deletes: int):
     """
     Execute the given clean-up plans.
     :param plans: the clean-up plans
@@ -100,7 +102,7 @@ def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
         _logger.debug(f"Deleted items: {[create_human_identifier(item, True) for item, _ in all_delete_setups]}")
 
 
-def create_human_explanation(plans: CleanUpPlans, dry_run: bool=True) -> str:
+def create_human_explanation(plans: List[CleanUpPlan], dry_run: bool=True) -> str:
     """
     Creates a human readable explanation of the given cleanup plans.
     :param plans: the plans to explain
@@ -126,13 +128,15 @@ def create_human_explanation(plans: CleanUpPlans, dry_run: bool=True) -> str:
     return "\n".join(lines)
 
 
-def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[PreventDeleteDetector], tracker: Tracker) \
+def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[PreventDeleteDetector], tracker: Tracker,
+                        already_marked_for_deletion: Set[OpenstackItem]) \
         -> Tuple[List[ItemAndReasons], List[ItemAndReasons]]:
     """
     Creates a report of what can be cleaned up in an area controlled by the given manager.
     :param manager: the OpenStack area manager, where the area could be instances, keys, etc.
     :param prevent_delete_detectors: the detectors that are to be used to determine if an item should not be deleted
     :param tracker: OpenStack item tracker
+    :param already_marked_for_deletion: OpenStack items already marked for deletion in other reports
     :return: tuple where the first item is a list of OpenStack items that have been identified as can be deleted, along 
     with the reasoning for this decision, and the second a list and reasoning of OpenStack items that should not be 
     deleted 
@@ -154,7 +158,8 @@ def _create_area_report(manager: Manager, prevent_delete_detectors: Iterable[Pre
         to_delete_reasons: List[str] = []
 
         for delete_prevent_detector in prevent_delete_detectors:
-            delete_prevented, reason = delete_prevent_detector(item, manager.openstack_credentials, tracker)
+            delete_prevented, reason = delete_prevent_detector(
+                item, manager.openstack_credentials, tracker, already_marked_for_deletion)
             if delete_prevented:
                 not_to_delete_reasons.append(reason)
             else:
