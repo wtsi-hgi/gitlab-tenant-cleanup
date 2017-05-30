@@ -1,7 +1,3 @@
-# XXX: `requests` is not required by this program but it is to work around waring dependencies:
-# error: requests 2.13.0 is installed but requests!=2.12.2,!=2.13.0,>=2.10.0 is required by {'python-novaclient', 'keystoneauth1'}
-requests==2.12.5
-
 # XXX: `Babel` is not required by this program but it is to work around waring dependencies:
 # Babel 2.4.0 is installed but Babel!=2.4.0,>=2.3.4 is required by {'oslo.i18n'}, yet 2.4.0 is already installed for
 # python-novaclient, which requires Babel>=2.3.4
