@@ -83,7 +83,7 @@ def run(configuration: Configuration, tracker: Tracker, dry_run: bool):
 
     try:
         plans = create_clean_up_plans(configuration, tracker, dry_run=dry_run)
-        _logger.info(create_human_explanation(plans))
+        _logger.info(create_human_explanation(plans, dry_run=dry_run))
         execute_plans(plans, configuration.general_configuration.max_simultaneous_deletes)
     except Exception as e:
         _logger.error(e)

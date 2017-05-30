@@ -83,12 +83,16 @@ def execute_plans(plans: CleanUpPlans, max_simultaneous_deletes: int):
         _logger.debug(f"Deleted items: {[create_human_identifier(item, True) for item, _ in all_delete_setups]}")
 
 
-def create_human_explanation(plans: CleanUpPlans) -> str:
+def create_human_explanation(plans: CleanUpPlans, dry_run: bool=True) -> str:
     """
     Creates a human readable explanation of the given cleanup plans.
     :param plans: the plans to explain
+    :param dry_run: whether executing a dry run
     :return: human readable explanation
     """
+    delete_action = "Deleting" if not dry_run else "Would delete"
+    not_delete_action = "Not deleting" if not dry_run else "Would not delete"
+
     lines: List[str] = []
     for i in range(len(plans)):
         lines.append(f"In cleanup configuration number {i +1}:")
@@ -96,9 +100,9 @@ def create_human_explanation(plans: CleanUpPlans) -> str:
 
         for manager_type, (delete_setups, marked_for_deletion, not_marked_for_deletion) in proposal.items():
             for item, reasons in marked_for_deletion:
-                lines.append(f"Deleting item {create_human_identifier(item, True)} as not prevented: {reasons}")
+                lines.append(f"{delete_action} item {create_human_identifier(item, True)} as not prevented: {reasons}")
             for item, reasons in not_marked_for_deletion:
-                lines.append(f"Not deleting item {create_human_identifier(item, True)} as prevented: {reasons}")
+                lines.append(f"{not_delete_action} item {create_human_identifier(item, True)} as prevented: {reasons}")
 
         lines.append("")
 
