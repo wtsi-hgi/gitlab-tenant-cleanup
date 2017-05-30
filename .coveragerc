@@ -2,6 +2,6 @@
 branch = True
 source = .
 omit =
-    openstacktenantcleanup/tests/*
+    openstacktenantcleaner/tests/*
     subrepos/*
 parallel = True
