@@ -29,7 +29,7 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
     plans: List[CleanUpPlan] = []
 
     for clean_up_configuration in configuration.clean_up_configurations:
-        clean_up_areas_plans: CleanUpPlan = {}
+        clean_up_area_plan: CleanUpPlan = {}
 
         for manager_type, prevent_delete_detectors in sort_clean_up_areas(clean_up_configuration.areas.items()):
             # Need to use all credentials when cleaning up keys, as they can only be removed by the account that created
@@ -42,8 +42,9 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
             all_area_not_marked_for_deletion: List[ItemAndReasons] = []
 
             for credentials in credentials_to_use:
-                already_marked_for_deletion = {item_and_reasons[0] for item_and_reasons in
-                                               {plan_details[1] for plan_details in clean_up_areas_plans.values()}}
+                already_marked_for_deletion = {item_and_reasons[0][0] for item_and_reasons in
+                                               filter(lambda x: len(x) > 0,
+                                                      [plan_details[1] for plan_details in clean_up_area_plan.values()])}
                 manager = manager_type(credentials)
                 marked_for_deletion, not_marked_for_deletion = _create_area_report(
                     manager, prevent_delete_detectors, tracker, already_marked_for_deletion)
@@ -55,10 +56,10 @@ def create_clean_up_plans(configuration: Configuration, tracker: Tracker, dry_ru
                 all_area_marked_for_deletion += marked_for_deletion
                 all_area_not_marked_for_deletion += not_marked_for_deletion
 
-            clean_up_areas_plans[manager_type] = all_area_delete_setups, all_area_marked_for_deletion, \
-                                                 all_area_not_marked_for_deletion
+            clean_up_area_plan[manager_type] = all_area_delete_setups, all_area_marked_for_deletion, \
+                                               all_area_not_marked_for_deletion
 
-        plans.append(clean_up_areas_plans)
+        plans.append(clean_up_area_plan)
 
     return plans
 
