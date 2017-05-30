@@ -9,7 +9,7 @@ from typing import List, Iterable, Type, Dict, Any
 
 from openstacktenantcleaner.common import get_absolute_path_relative_to
 from openstacktenantcleaner.detectors import PreventDeleteDetector, prevent_delete_protected_image_detector, \
-    prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, created_exclude_detector, \
+    prevent_delete_image_in_use_detector, prevent_delete_key_pair_in_use_detector, create_exclude_detector, \
     create_delete_if_older_than_detector
 from openstacktenantcleaner.external.hgicommon.models import Model
 from openstacktenantcleaner.managers import OpenstackInstanceManager, Manager, OpenstackImageManager, \
@@ -88,7 +88,7 @@ def _create_common_prevent_delete_detectors(parent_property: Dict[str, Any]) -> 
 
     if _CLEAN_UP_EXCLUDE_PROPERTY in parent_property:
         excludes = [re.compile(exclude) for exclude in parent_property[_CLEAN_UP_EXCLUDE_PROPERTY]]
-        detectors.append(created_exclude_detector(excludes))
+        detectors.append(create_exclude_detector(excludes))
 
     if _CLEAN_UP_REMOVE_IF_OLDER_THAN_PROPERTY in parent_property:
         delete_if_older_than = parse_timedelta(parent_property[_CLEAN_UP_REMOVE_IF_OLDER_THAN_PROPERTY])
