@@ -1,6 +1,6 @@
 # XXX: `Babel` is not required by this program but it is to work around waring dependencies:
-# Babel 2.4.0 is installed but Babel!=2.4.0,>=2.3.4 is required by {'oslo.i18n'}, yet 2.4.0 is already installed for
-# python-novaclient, which requires Babel>=2.3.4
+# Babel 2.4.0 is installed but Babel!=2.4.0,>=2.3.4 is required by `oslo.i18n`, yet 2.4.0 is already installed for
+# `python-novaclient`, which requires Babel>=2.3.4
 Babel==2.3.4
 
 python-novaclient==8.0.0
